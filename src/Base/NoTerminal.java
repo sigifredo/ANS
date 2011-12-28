@@ -8,18 +8,27 @@ package Base;
  *
  * @author raziel
  */
-public class NoTerminal extends Elemento {
+public class NoTerminal extends Elemento
+{
     
     /**
      * Constructor.
      * 
      * @param simbolo Letra que tendrá el terminal.
      */
-    public NoTerminal(String simbolo) {
+    public NoTerminal(String simbolo)
+    {
         super(simbolo, Tipo.no_terminal);
     }
     
-    public NoTerminal(NoTerminal noTerminal) {
+    public NoTerminal(NoTerminal noTerminal)
+    {
         super(noTerminal._simbolo, noTerminal._tipo);
+    }
+    
+    @Override
+    public String toString()
+    {
+        return "<" + _simbolo + ">";
     }
 }

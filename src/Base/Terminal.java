@@ -8,14 +8,16 @@ package Base;
  *
  * @author raziel
  */
-public class Terminal extends Elemento {
+public class Terminal extends Elemento
+{
     
     /**
      * Constructor.
      * 
      * @param simbolo Letra que tendrá el no terminal.
      */
-    public Terminal(String simbolo) {
+    public Terminal(String simbolo)
+    {
         super(simbolo, Tipo.terminal);
     }
     
@@ -24,7 +26,8 @@ public class Terminal extends Elemento {
      * 
      * @param terminal Objeto de la clase terminal en base al cual se creará el objeto nuevo.
      */
-    public Terminal(Terminal terminal) {
+    public Terminal(Terminal terminal)
+    {
         super(terminal._simbolo, terminal._tipo);
     }
 }

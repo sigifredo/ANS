@@ -8,15 +8,18 @@ package Base;
  *
  * @author raziel
  */
-public class Gramatica {
+public class Gramatica
+{
     
     protected Produccion _producciones[];
     
-    public Gramatica(String gramatica) {
+    public Gramatica(String gramatica)
+    {
         String producciones[] = gramatica.split("\n");
         _producciones = new Produccion[producciones.length];
         
-        for(int i = 0; i < _producciones.length; i++) {
+        for(int i = 0; i < _producciones.length; i++)
+        {
             _producciones[i] = new Produccion(producciones[i]);
         }
     }

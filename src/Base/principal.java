@@ -8,10 +8,14 @@ package Base;
  *
  * @author raziel
  */
-public class principal {
+public class principal
+{
     
-    public static void main(String args[]) {
-        System.out.println("");
+    public static void main(String args[])
+    {
+        String sProduccion = "<A>->a<B>";
+        Produccion prod = new Produccion(sProduccion);
+        System.out.println("" + prod);
     }
     
 }
