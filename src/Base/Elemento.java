@@ -11,7 +11,7 @@ package Base;
 public class Elemento
 {
     
-    public enum Tipo { terminal, no_terminal, simbolo_inicial, regla_de_produccion };
+    public enum Tipo { terminal, no_terminal, terminal_nula, simbolo_inicial, regla_de_produccion };
     
     protected String _simbolo;
     protected Tipo _tipo;
@@ -28,6 +28,17 @@ public class Elemento
         this._tipo = tipo;
     }
     
+    /**
+     * Constructor de copia.
+     * 
+     * @param e 
+     */
+    public Elemento(Elemento e)
+    {
+        this._simbolo = e._simbolo;
+        this._tipo = e._tipo;
+    }
+    
     public String simbolo()
     {
         return this._simbolo;
@@ -38,6 +49,7 @@ public class Elemento
         return this._tipo;
     }
     
+    @Override
     public boolean equals(Object o)
     {
         Elemento e = (Elemento)o;

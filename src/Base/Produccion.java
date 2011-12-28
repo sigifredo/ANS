@@ -74,6 +74,16 @@ public class Produccion
         }
     }
     
+    public Elemento derecha(int index)
+    {
+        return _derecha[index];
+    }
+    
+    public NoTerminal izquierda()
+    {
+        return new NoTerminal(_izquierda);
+    }
+    
     @Override
     public String toString()
     {
