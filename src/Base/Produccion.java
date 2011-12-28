@@ -74,9 +74,10 @@ public class Produccion
         }
     }
     
+    @Override
     public String toString()
     {
-        String s = _izquierda + "->";
+        String s = _izquierda + " -> ";
         for(int i = 0; i < _derecha.length; i++)
         {
             s += _derecha[i];

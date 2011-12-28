@@ -13,9 +13,9 @@ public class principal
     
     public static void main(String args[])
     {
-        String sProduccion = "<A>->a<B>";
-        Produccion prod = new Produccion(sProduccion);
-        System.out.println("" + prod);
+        String sGram = "<A>->a<B>\n<A>->c";
+        Gramatica g = new Gramatica(sGram);
+        System.out.println("" + g);
     }
     
 }

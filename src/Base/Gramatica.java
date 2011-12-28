@@ -24,4 +24,15 @@ public class Gramatica
         }
     }
     
+    @Override
+    public String toString()
+    {
+        String s = "";
+        for(int i = 0; i < _producciones.length; i++)
+        {
+            s += _producciones[i] + "\n";
+        }
+        return s;
+    }
+    
 }
