@@ -5,6 +5,7 @@
 package Base;
 
 import Base.Elemento.Tipo;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -21,9 +22,22 @@ public class Gramatica
         String producciones[] = gramatica.split("\n");
         _producciones = new Produccion[producciones.length];
         
+        HashMap hm = new HashMap();
         for(int i = 0; i < _producciones.length; i++)
         {
             _producciones[i] = new Produccion(producciones[i]);
+            
+            NoTerminal nt = (NoTerminal)hm.get(_producciones[i].izquierda().simbolo());
+            if(nt == null)
+                hm.put(_producciones[i].izquierda().simbolo(), _producciones[i].izquierda());
+            else
+            {
+                if(_producciones[i]._izquierda._anulable || nt._anulable)
+                {
+                    nt._anulable = true;
+                }
+                _producciones[i]._izquierda = nt;
+            }
         }
     }
     
@@ -50,6 +64,45 @@ public class Gramatica
                 hm.put(_producciones[i].izquierda().simbolo(), b);
         }
         return true;
+    }
+    
+    public ArrayList primeros(NoTerminal noTerminal)
+    {
+        if(!noTerminal.primeros().isEmpty())
+            return noTerminal.primeros();
+        else
+        {
+            ArrayList prim = new ArrayList();
+            for(int i = 0; i < _producciones.length; i++)
+            {
+                Elemento[] derecha = _producciones[i]._derecha;
+
+                for(int j = 0; j < derecha.length; j++)
+                {
+                    if(derecha[j].tipo() == Tipo.terminal)
+                    {
+                        prim.add(derecha[j]);
+                        return prim;
+                    }
+                    else if(derecha[j].tipo() == Tipo.no_terminal)
+                    {
+                        NoTerminal nt = (NoTerminal)derecha[j];
+                        if(nt._anulable)
+                        {
+                            prim.addAll(primeros(nt));
+                            continue;
+                        }
+                        else
+                        {
+                            prim.addAll(primeros(nt));
+                            break;
+                        }
+                    }
+                }
+            }
+            noTerminal.primeros(prim);
+            return prim;
+        }
     }
     
     @Override

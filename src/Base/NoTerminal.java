@@ -4,12 +4,18 @@
  */
 package Base;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 /**
  *
  * @author raziel
  */
 public class NoTerminal extends Elemento
 {
+    protected ArrayList _primeros;
+    protected ArrayList _siguientes;
+    public boolean _anulable;
     
     /**
      * Constructor.
@@ -19,11 +25,31 @@ public class NoTerminal extends Elemento
     public NoTerminal(String simbolo)
     {
         super(simbolo, Tipo.no_terminal);
+        _anulable = false;
+        _primeros = new ArrayList();
+        _siguientes = new ArrayList();
     }
     
     public NoTerminal(NoTerminal noTerminal)
     {
         super(noTerminal._simbolo, noTerminal._tipo);
+        _anulable = noTerminal._anulable;
+        _primeros = noTerminal._primeros;
+        _siguientes = noTerminal._siguientes;
+    }
+    
+    public ArrayList primeros()
+    {
+        return _primeros;
+    }
+    
+    public void primeros(ArrayList p)
+    {
+        Iterator it = p.iterator();
+        while(it.hasNext())
+        {
+            _primeros.add(it.next());
+        }
     }
     
     @Override

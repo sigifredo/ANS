@@ -12,8 +12,8 @@ import java.util.ArrayList;
  */
 public class Produccion
 {
-    protected NoTerminal _izquierda;
-    protected Elemento _derecha[];
+    NoTerminal _izquierda;
+    Elemento _derecha[];
     
     /**
      * Constructor de la clase.
@@ -43,29 +43,38 @@ public class Produccion
             
             // Derecha - terminales y no terminales
             {
-                ArrayList<Elemento> arr = new ArrayList<Elemento>();
-                boolean noTerminal = false;
-                for(int i = 0; i < elementos[1].length(); i++)
+                if(elementos[1].charAt(0) == '┤')
                 {
-                    if(elementos[1].charAt(i) == '<' && !noTerminal) // No terminal
-                    {
-                        noTerminal = true;
-                        String t = "";
-                        i++;
-                        while(elementos[1].charAt(i) != '>')
-                        {
-                            t += elementos[1].charAt(i);
-                            i++;
-                        }
-                        arr.add(new NoTerminal(t));
-                    }
-                    else // Terminal
-                    {
-                        arr.add(new Terminal("" + elementos[1].charAt(i)));
-                    }
+                    _derecha = new Elemento[1];
+                    _derecha[0] = new Terminal("┤");
+                    _izquierda._anulable = true;
                 }
-                _derecha = new Elemento[arr.size()];
-                _derecha = arr.toArray(_derecha);
+                else
+                {
+                    ArrayList<Elemento> arr = new ArrayList<Elemento>();
+                    boolean noTerminal = false;
+                    for(int i = 0; i < elementos[1].length(); i++)
+                    {
+                        if(elementos[1].charAt(i) == '<' && !noTerminal) // No terminal
+                        {
+                            noTerminal = true;
+                            String t = "";
+                            i++;
+                            while(elementos[1].charAt(i) != '>')
+                            {
+                                t += elementos[1].charAt(i);
+                                i++;
+                            }
+                            arr.add(new NoTerminal(t));
+                        }
+                        else // Terminal
+                        {
+                            arr.add(new Terminal("" + elementos[1].charAt(i)));
+                        }
+                    }
+                    _derecha = new Elemento[arr.size()];
+                    _derecha = arr.toArray(_derecha);
+                }
             }
         }
         else
@@ -81,7 +90,7 @@ public class Produccion
     
     public NoTerminal izquierda()
     {
-        return new NoTerminal(_izquierda);
+        return _izquierda;
     }
     
     @Override
