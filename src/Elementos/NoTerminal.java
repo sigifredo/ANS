@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package Base;
+package Elementos;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -22,7 +22,7 @@ public class NoTerminal extends Elemento
      * 
      * @param simbolo Letra que tendrá el terminal.
      */
-    public NoTerminal(String simbolo)
+    private NoTerminal(String simbolo)
     {
         super(simbolo, Tipo.no_terminal);
         _anulable = false;
@@ -30,7 +30,7 @@ public class NoTerminal extends Elemento
         _siguientes = new ArrayList();
     }
     
-    public NoTerminal(NoTerminal noTerminal)
+    private NoTerminal(NoTerminal noTerminal)
     {
         super(noTerminal._simbolo, noTerminal._tipo);
         _anulable = noTerminal._anulable;
@@ -64,6 +64,15 @@ public class NoTerminal extends Elemento
         {
             _siguientes.add(it.next());
         }
+    }
+    
+    public static Elemento crearNoTerminal(String simbolo)
+    {
+        if(mElementos.get(simbolo) == null)
+        {
+            return new NoTerminal(simbolo);
+        }
+        else return mElementos.get(simbolo);
     }
     
     @Override

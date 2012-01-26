@@ -4,6 +4,9 @@
  */
 package Base;
 
+import Elementos.Elemento;
+import Elementos.NoTerminal;
+import Elementos.Terminal;
 import java.util.ArrayList;
 
 /**
@@ -23,8 +26,7 @@ public class Produccion
      */
     public Produccion(NoTerminal izquierda, Elemento derecha[])
     {
-        _izquierda = new NoTerminal(izquierda);
-        // falta
+        _izquierda = izquierda;
         _derecha = derecha;
     }
     
@@ -39,14 +41,14 @@ public class Produccion
         if(elementos.length == 2)
         {
             // Izquierda - NoTerminal
-            _izquierda = new NoTerminal(elementos[0].substring(1, elementos[0].length()-1));
+            _izquierda = (NoTerminal) NoTerminal.crearNoTerminal(elementos[0].substring(1, elementos[0].length()-1));
             
             // Derecha - terminales y no terminales
             {
-                if(elementos[1].charAt(0) == '┤')
+                if(elementos[1].charAt(0) == '$')
                 {
                     _derecha = new Elemento[1];
-                    _derecha[0] = new Terminal("┤");
+                    _derecha[0] = Terminal.crearTerminal("$");
                     _izquierda._anulable = true;
                 }
                 else
@@ -65,11 +67,11 @@ public class Produccion
                                 t += elementos[1].charAt(i);
                                 i++;
                             }
-                            arr.add(new NoTerminal(t));
+                            arr.add(NoTerminal.crearNoTerminal(t));
                         }
                         else // Terminal
                         {
-                            arr.add(new Terminal("" + elementos[1].charAt(i)));
+                            arr.add(Terminal.crearTerminal("" + elementos[1].charAt(i)));
                         }
                         noTerminal = false;
                     }
@@ -82,6 +84,21 @@ public class Produccion
         {
             throw new RuntimeException("Compiled Code");
         }
+    }
+    
+    /**
+     * Busca un elemento en el lado derecho de la producción. Y si este existe retorna la posición.
+     *
+     * @param elemento
+     * @return 
+     */
+    public int derechaContiene(Elemento elemento)
+    {
+        for(int i = 0; i < _derecha.length; i++)
+        {
+            if(_derecha[i].equals(elemento)) return i;
+        }
+        return -1;
     }
     
     public Elemento derecha(int index)

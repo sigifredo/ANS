@@ -2,7 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package Base;
+package Elementos;
+
+import java.util.Map;
 
 /**
  *
@@ -10,7 +12,8 @@ package Base;
  */
 public class Elemento
 {
-    
+    public static Map<String, Elemento> mElementos;
+
     public enum Tipo { terminal, no_terminal, terminal_nula, simbolo_inicial, regla_de_produccion };
     
     protected String _simbolo;
@@ -22,7 +25,7 @@ public class Elemento
      * @param simbolo Simbolo o letra asociado al elemento de la gramática.
      * @param tipo Tipo de elemento de la gramágica.
      */
-    public Elemento(String simbolo, Tipo tipo)
+    protected Elemento(String simbolo, Tipo tipo)
     {
         this._simbolo = simbolo;
         this._tipo = tipo;
@@ -33,7 +36,7 @@ public class Elemento
      * 
      * @param e 
      */
-    public Elemento(Elemento e)
+    protected Elemento(Elemento e)
     {
         this._simbolo = e._simbolo;
         this._tipo = e._tipo;
@@ -47,6 +50,11 @@ public class Elemento
     public Tipo tipo()
     {
         return this._tipo;
+    }
+    
+    public static Elemento obtenerElemento(String simbolo)
+    {
+        return mElementos.get(simbolo);
     }
     
     @Override
