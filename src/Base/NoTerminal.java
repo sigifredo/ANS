@@ -51,6 +51,20 @@ public class NoTerminal extends Elemento
             _primeros.add(it.next());
         }
     }
+
+    public ArrayList siguientes()
+    {
+        return _siguientes;
+    }
+
+    public void siguientes(ArrayList s)
+    {
+        Iterator it = s.iterator();
+        while(it.hasNext())
+        {
+            _siguientes.add(it.next());
+        }
+    }
     
     @Override
     public String toString()

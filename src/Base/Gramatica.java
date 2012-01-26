@@ -15,7 +15,7 @@ import java.util.HashMap;
 public class Gramatica
 {
     
-    protected Produccion _producciones[];
+    Produccion _producciones[];
     
     public Gramatica(String gramatica)
     {
@@ -102,6 +102,68 @@ public class Gramatica
             }
             noTerminal.primeros(prim);
             return prim;
+        }
+    }
+
+    public ArrayList siguientes(NoTerminal noTerminal)
+    {
+        if(!noTerminal.siguientes().isEmpty()) return noTerminal.siguientes();
+        else
+        {
+            ArrayList sig = new ArrayList();
+            if(_producciones[0]._izquierda.equals(noTerminal))
+                sig.add("#");
+            for(int i = 0; i < _producciones.length; i++)
+            {
+                for(int j = 0; j < _producciones[i]._derecha.length; j++)
+                {
+                    if(_producciones[i]._derecha[j].tipo() == Tipo.no_terminal && _producciones[i]._derecha[j].equals(noTerminal))
+                    {
+                        if(j == (_producciones[i]._derecha.length-1)) // último
+                        {
+                            if(_producciones[i]._izquierda.equals(noTerminal))
+                            {
+                                j++;
+                            }
+                            else
+                            {
+                                sig.addAll(siguientes(_producciones[i]._izquierda));
+                            }
+                        }
+                        else
+                        {
+                            j++;
+                            if(_producciones[i]._derecha[j].tipo() == Tipo.terminal)
+                            {
+                                sig.add(_producciones[i]._derecha[j]);
+                            }
+                            else
+                            {
+                                for(int k = j; k < _producciones[i]._derecha.length; k++)
+                                {
+                                    if(_producciones[i]._derecha[k].tipo() == Tipo.terminal)
+                                    {
+                                        sig.add(_producciones[i]._derecha[k]);
+                                    }
+                                    else
+                                    {
+                                        NoTerminal nt = (NoTerminal)_producciones[i]._derecha[k];
+                                        if(nt._anulable) sig.addAll(primeros(nt));
+                                        else
+                                        {
+                                            sig.addAll(primeros(nt));
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            noTerminal.siguientes(sig);
+            return sig;
         }
     }
     

@@ -71,6 +71,7 @@ public class Produccion
                         {
                             arr.add(new Terminal("" + elementos[1].charAt(i)));
                         }
+                        noTerminal = false;
                     }
                     _derecha = new Elemento[arr.size()];
                     _derecha = arr.toArray(_derecha);
