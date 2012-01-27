@@ -9,6 +9,7 @@ import Elementos.Elemento.Tipo;
 import Elementos.NoTerminal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -17,59 +18,48 @@ import java.util.Map;
  */
 public class Gramatica
 {
-    Produccion _producciones[];
-    Map<String, String> _siguientes;
-    
+    ArrayList<Produccion> _producciones;
+    Map<String, ArrayList> _primeros;
+    Map<String, ArrayList> _siguientes;
+
     public Gramatica(String gramatica)
     {
         String producciones[] = gramatica.split("\n");
-        _producciones = new Produccion[producciones.length];
-        _siguientes = new HashMap<String, String>();
-        
-        HashMap hm = new HashMap();
-        for(int i = 0; i < _producciones.length; i++)
+        _producciones = new ArrayList<Produccion>();
+        _siguientes = new HashMap<String, ArrayList>();
+        _primeros = new HashMap<String, ArrayList>();
+
+        for(int i = 0; i < producciones.length; i++)
         {
-            _producciones[i] = new Produccion(producciones[i]);
-            
-            NoTerminal nt = (NoTerminal)hm.get(_producciones[i].izquierda().simbolo());
-            if(nt == null)
-                hm.put(_producciones[i].izquierda().simbolo(), _producciones[i].izquierda());
-            else
-            {
-                if(_producciones[i]._izquierda._anulable || nt._anulable)
-                {
-                    nt._anulable = true;
-                }
-                _producciones[i]._izquierda = nt;
-            }
+            _producciones.add(new Produccion(producciones[i]));
         }
     }
-    
+
     public boolean gramaticaS()
     {
         HashMap hm = new HashMap();
-        for(int i = 0; i < _producciones.length; i++)
+        for(int i = 0; i < _producciones.size(); i++)
         {
-            Elemento b = _producciones[i].derecha(0);
+            Elemento b = _producciones.get(i).derecha(0);
             if(b.tipo() != Tipo.terminal)
                 return false; // es no terminal o nula
 
-            Elemento e = (Elemento)hm.get(_producciones[i].izquierda().simbolo());
+            Elemento e = (Elemento)hm.get(_producciones.get(i).izquierda().simbolo());
             if(e != null)
             {
-               if(e.equals(b))
-               {
-                   return false;
-               }
-               else
-                   hm.put(_producciones[i].izquierda().simbolo(), b);
+                if(e.equals(b))
+                {
+                    return false;
+                }
+                else
+                    hm.put(_producciones.get(i).izquierda().simbolo(), b);
             }
             else
-                hm.put(_producciones[i].izquierda().simbolo(), b);
+                hm.put(_producciones.get(i).izquierda().simbolo(), b);
         }
         return true;
     }
-    
+
     public ArrayList primeros(NoTerminal noTerminal)
     {
         if(!noTerminal.primeros().isEmpty())
@@ -77,9 +67,9 @@ public class Gramatica
         else
         {
             ArrayList prim = new ArrayList();
-            for(int i = 0; i < _producciones.length; i++)
+            for(int i = 0; i < _producciones.size(); i++)
             {
-                Elemento[] derecha = _producciones[i]._derecha;
+                Elemento[] derecha = _producciones.get(i)._derecha;
 
                 for(int j = 0; j < derecha.length; j++)
                 {
@@ -119,139 +109,86 @@ public class Gramatica
      */
     public ArrayList siguientes(NoTerminal noTerminal)
     {
-		String siguientes = "";
-//		System.out.println("Obteniendo Siguientes de : " + noTerminal);
-		for(int i = 0; i < _producciones.length; i++)
-		{
-                    Produccion p = _producciones[i];
-
-                    int posicion;
-                    if((posicion = p.derechaContiene(noTerminal)) > 0)
-                    {
-                        if (posicion == (p._derecha.length-1)) // Si no es ultimo
-                        {
-                            // en la produccion
-                            // String aux = obtenerLaFormaSentencialDerechaDesde(p.rightpart, noTerminal);
-                            if (!isAnulableLaFormaSentencialDerecha(p.rightpart, noTerminal))
-                            {
-                                if (p.derecha(posicion+1).tipo() == Tipo.terminal)
-                                // if (isTerminal(aux.charAt(0))) // no anulable y no
-                                {
-                                    // terminal
-                                    if (!siguientes.contains(p.derecha(posicion+1).simbolo()))
-                                    {
-                                        siguientes += p.derecha(posicion+1).simbolo();
-                                    }
-                                }
-                                else // no es terminal y no es anulable
-                                {
-                                    ArrayList primeros;
-                                    primeros = primeros((NoTerminal)p.derecha(posicion+1));
-                                    for (Character c : aux2.toCharArray())
-                                    {
-                                        if (!siguientes.contains(Character.toString(aux.charAt(0))))
-                                        {
-                                            siguientes += c;
-                                        }
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                // el NT que tengo es anulable
-                                // son los primeros del nt que me llego y los sig de la
-                                // parte iza
-                                ArrayList primeros = primeros((NoTerminal) p.derecha(posicion+1));
-                                // String aux2 = removeLambda(primeros);
-                                for(int j = 0; j < primeros.size(); j++)
-                                // for (Character c : aux2.toCharArray())
-                                {
-                                    Elemento e = (Elemento) primeros.get(i);
-                                    if (!siguientes.contains(e.simbolo()))
-                                    {
-                                        siguientes += e.simbolo();
-                                    }
-                                }
-                                String siguientesDeLaIzq = siguientesDe(p.noterminal);
-						for (Character c : siguientesDeLaIzq.toCharArray()) {
-							if (!siguientes.contains(Character.toString(c))) {
-								siguientes += c;
-							}
-						}
-					}
-				} else {
-					if (isUltimo(p.rightpart, noTerminal)) {
-						// ahora es que el noterminal este al ultimo de una
-						// produccion
-						if (!p.noterminal.equals(noTerminal)) {
-							// para evitar la recursion infinita F->AF
-							String siguientesDelNoTerminal = siguientesDe(p.noterminal);
-							if (!siguientesDelNoTerminal.contains(noTerminal)) {
-								for (Character c : siguientesDelNoTerminal
-										.toCharArray()) {
-									if (!siguientes.contains(Character
-											.toString(c))) {
-										siguientes += c;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		if (noTerminal.equals(initSymbol)) {
-			siguientes += EOF;
-		}
-		return siguientes;
-/*
-        if(!noTerminal.siguientes().isEmpty()) return noTerminal.siguientes();
-        else
+        String siguientes = "";
+        Iterator<Produccion> it = _producciones.iterator();
+        while(it.hasNext())
         {
-            ArrayList sig = new ArrayList();
-            if(_producciones[0]._izquierda.equals(noTerminal))
-                sig.add("#");
-            for(int i = 0; i < _producciones.length; i++)
+            Produccion p = it.next();
+
+            int posicion;
+            if((posicion = p.derechaContiene(noTerminal)) > 0)
             {
-                for(int j = 0; j < _producciones[i]._derecha.length; j++)
+                if (posicion == (p._derecha.length-1)) // Si no es ultimo
                 {
-                    if(_producciones[i]._derecha[j].tipo() == Tipo.no_terminal && _producciones[i]._derecha[j].equals(noTerminal))
+                    // en la produccion
+                    // String aux = obtenerLaFormaSentencialDerechaDesde(p.rightpart, noTerminal);
+                    if (!esAnulableLaFormaSentencialDerecha(p._derecha, posicion))
                     {
-                        if(j == (_producciones[i]._derecha.length-1)) // último
+                        if (p.derecha(posicion+1).tipo() == Tipo.terminal)
+                            // if (isTerminal(aux.charAt(0))) // no anulable y no
                         {
-                            if(_producciones[i]._izquierda.equals(noTerminal))
+                            // terminal
+                            if (!siguientes.contains(p.derecha(posicion+1).simbolo()))
                             {
-                                j++;
-                            }
-                            else
-                            {
-                                sig.addAll(siguientes(_producciones[i]._izquierda));
+                                siguientes += p.derecha(posicion+1).simbolo();
                             }
                         }
-                        else
+                        else // no es terminal y no es anulable
                         {
-                            j++;
-                            if(_producciones[i]._derecha[j].tipo() == Tipo.terminal)
+                            ArrayList primeros;
+                            primeros = primeros((NoTerminal) p.derecha(posicion+1));
+                            for (Character c : aux2.toCharArray())
                             {
-                                sig.add(_producciones[i]._derecha[j]);
-                            }
-                            else
-                            {
-                                for(int k = j; k < _producciones[i]._derecha.length; k++)
+                                if (!siguientes.contains(Character.toString(aux.charAt(0))))
                                 {
-                                    if(_producciones[i]._derecha[k].tipo() == Tipo.terminal)
+                                    siguientes += c;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // el NT que tengo es anulable
+                        // son los primeros del nt que me llego y los sig de la
+                        // parte iza
+                        ArrayList primeros = primeros((NoTerminal) p.derecha(posicion+1));
+                        // String aux2 = removeLambda(primeros);
+                        for(int j = 0; j < primeros.size(); j++)
+                            // for (Character c : aux2.toCharArray())
+                        {
+                            Elemento e = (Elemento) primeros.get(i);
+                            if (!siguientes.contains(e.simbolo()))
+                            {
+                                siguientes += e.simbolo();
+                            }
+                        }
+                        String siguientesDeLaIzq = siguientesDe(p.noterminal);
+                        for (Character c : siguientesDeLaIzq.toCharArray())
+                        {
+                            if (!siguientes.contains(Character.toString(c)))
+                            {
+                                siguientes += c;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if (isUltimo(p.rightpart, noTerminal))
+                    {
+                        // ahora es que el noterminal este al ultimo de una
+                        // produccion
+                        if (!p.noterminal.equals(noTerminal))
+                        {
+                            // para evitar la recursion infinita F->AF
+                            String siguientesDelNoTerminal = siguientesDe(p.noterminal);
+                            if (!siguientesDelNoTerminal.contains(noTerminal))
+                            {
+                                for (Character c : siguientesDelNoTerminal.toCharArray())
+                                {
+                                    if (!siguientes.contains(Character.toString(c)))
                                     {
-                                        sig.add(_producciones[i]._derecha[k]);
-                                    }
-                                    else
-                                    {
-                                        NoTerminal nt = (NoTerminal)_producciones[i]._derecha[k];
-                                        if(nt._anulable) sig.addAll(primeros(nt));
-                                        else
-                                        {
-                                            sig.addAll(primeros(nt));
-                                            break;
-                                        }
+                                        siguientes += c;
                                     }
                                 }
                             }
@@ -259,55 +196,171 @@ public class Gramatica
                     }
                 }
             }
-
-            noTerminal.siguientes(sig);
-            return sig;
         }
-*/
+        if (noTerminal.equals(initSymbol))
+        {
+            siguientes += EOF;
+        }
+        return siguientes;
+        /*
+                if(!noTerminal.siguientes().isEmpty()) return noTerminal.siguientes();
+                else
+                {
+                    ArrayList sig = new ArrayList();
+                    if(_producciones[0]._izquierda.equals(noTerminal))
+                        sig.add("#");
+                    for(int i = 0; i < _producciones.length; i++)
+                    {
+                        for(int j = 0; j < _producciones[i]._derecha.length; j++)
+                        {
+                            if(_producciones[i]._derecha[j].tipo() == Tipo.no_terminal && _producciones[i]._derecha[j].equals(noTerminal))
+                            {
+                                if(j == (_producciones[i]._derecha.length-1)) // último
+                                {
+                                    if(_producciones[i]._izquierda.equals(noTerminal))
+                                    {
+                                        j++;
+                                    }
+                                    else
+                                    {
+                                        sig.addAll(siguientes(_producciones[i]._izquierda));
+                                    }
+                                }
+                                else
+                                {
+                                    j++;
+                                    if(_producciones[i]._derecha[j].tipo() == Tipo.terminal)
+                                    {
+                                        sig.add(_producciones[i]._derecha[j]);
+                                    }
+                                    else
+                                    {
+                                        for(int k = j; k < _producciones[i]._derecha.length; k++)
+                                        {
+                                            if(_producciones[i]._derecha[k].tipo() == Tipo.terminal)
+                                            {
+                                                sig.add(_producciones[i]._derecha[k]);
+                                            }
+                                            else
+                                            {
+                                                NoTerminal nt = (NoTerminal)_producciones[i]._derecha[k];
+                                                if(nt._anulable) sig.addAll(primeros(nt));
+                                                else
+                                                {
+                                                    sig.addAll(primeros(nt));
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    noTerminal.siguientes(sig);
+                    return sig;
+                }
+        */
     }
-    
-    public boolean esAnulable(String noTerminal)
+
+    public ArrayList seleccion()
     {
-        return true;
+        return null;
     }
-    
+
+    public void factIzq()
+    {
+        // Recorremos todas las producciones
+        int i = 0; // indice, que indica en qué elemento del arreglo estamos.
+        Iterator<Produccion> it = _producciones.iterator();
+        while(it.hasNext())
+        {
+            // Ponemos un alias a la producción.
+            Produccion p1 = it.next();
+            
+            // Buscamos las producciones cuyo primer simbolo del lado
+            // derecho es un no terminal
+            if(p1.derecha(0).tipo() == Tipo.no_terminal)
+            {
+                // Ponemos un alias al no terminal.
+                NoTerminal nt = (NoTerminal) p1.derecha(0);
+                
+                // Creamos una lista donde guardaremos las nuevas producciones que
+                // saldrán de reemplazar el primer no terminal de la derecha.
+                ArrayList nuevasProducciones = new ArrayList();
+
+                // Recorremos de nuevo las producciones en busca del no terminal
+                // encontrado anteriormente para reemplazarlo
+                Iterator<Produccion> jt = _producciones.iterator();
+                while(jt.hasNext())
+                {
+                    // Ponemos un alias a la producción
+                    Produccion p2 = jt.next();
+                    
+                    // Verificamos que la producción que vamos a eliminar sea
+                    // la que estamos buscando para reemplazarla
+                    if(nt.equals(p2.izquierda()))
+                    {
+                        // Creamos la derecha de la nueva producción.
+                        ArrayList<Elemento> nuevaDerecha = new ArrayList<Elemento>();
+
+                        for(int k = 0; k < p2._derecha.length; k++)
+                        {
+                            nuevaDerecha.add(p2.derecha(k));
+                        }
+                        for(int k = 1; k < p1._derecha.length; k++)
+                        {
+                            nuevaDerecha.add(p1.derecha(k));
+                        }
+
+                        Produccion nuevaProduccion = new Produccion(nt, nuevaDerecha);
+                        nuevasProducciones.add(nuevaProduccion);
+                    }
+                }
+                _producciones.addAll(i, nuevasProducciones);
+            }
+            i++;
+        }
+    }
+
+    public void sustitucionIzq()
+    {
+        
+    }
+
     /**
      * Este es si es anulable la parte sentencial derecha dese el no terminal
      *
      * @param formaSentencialDerecha
-     * @param noTerminal
+     * @param indice Índice a partir del cual comenzaremos a ver si la forma sentencial derecha es o no anulable.
      * @return Si es anulable o no
      */
-    private boolean esAnulableLaFormaSentencialDerecha(String formaSentencialDerecha, String noTerminal)
+    private boolean esAnulableLaFormaSentencialDerecha(Elemento elementos[], int indice)
     {
-        for (int i = 0; i < formaSentencialDerecha.length(); i++)
+        for(int i = indice+1; i < elementos.length; i++)
         {
-            if (formaSentencialDerecha.charAt(i) == noTerminal.charAt(0))
+            if(elementos[i].tipo() == Tipo.terminal) return false;
+            else
             {
-                String c = "";
-                c += formaSentencialDerecha.charAt(i+1);
-                if (_sTerminales.contains(c))
-                {
-                    return false;
-                }
-                else
-                {
-                    return esAnulable(Character.toString(formaSentencialDerecha.charAt(i + 1)));
-                }
+                NoTerminal nt = (NoTerminal) elementos[i];
+                if(!nt._anulable) return false;
             }
         }
-        return false;
+        return true;
     }
-    
+
     @Override
     public String toString()
     {
         String s = "";
-        for(int i = 0; i < _producciones.length; i++)
+        System.out.println("--" + _producciones.size());
+        for(int i = 0; i < _producciones.size(); i++)
         {
-            s += _producciones[i] + "\n";
+            System.out.println("---");
+            s += _producciones.get(i) + "\n";
         }
         return s;
     }
-    
+
 }

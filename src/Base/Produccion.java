@@ -33,6 +33,19 @@ public class Produccion
     /**
      * Constructor de la clase.
      * 
+     * @param izquierda
+     * @param derecha 
+     */
+    public Produccion(NoTerminal izquierda, ArrayList<Elemento> derecha)
+    {
+        _izquierda = izquierda;
+        _derecha = new Elemento[derecha.size()];
+        _derecha = derecha.toArray(_derecha);
+    }
+    
+    /**
+     * Constructor de la clase.
+     * 
      * @param produccion 
      */
     public Produccion(String produccion)
@@ -54,12 +67,10 @@ public class Produccion
                 else
                 {
                     ArrayList<Elemento> arr = new ArrayList<Elemento>();
-                    boolean noTerminal = false;
                     for(int i = 0; i < elementos[1].length(); i++)
                     {
-                        if(elementos[1].charAt(i) == '<' && !noTerminal) // No terminal
+                        if(elementos[1].charAt(i) == '<') // No terminal
                         {
-                            noTerminal = true;
                             String t = "";
                             i++;
                             while(elementos[1].charAt(i) != '>')
@@ -73,7 +84,6 @@ public class Produccion
                         {
                             arr.add(Terminal.crearTerminal("" + elementos[1].charAt(i)));
                         }
-                        noTerminal = false;
                     }
                     _derecha = new Elemento[arr.size()];
                     _derecha = arr.toArray(_derecha);

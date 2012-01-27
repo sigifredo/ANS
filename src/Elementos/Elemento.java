@@ -4,6 +4,7 @@
  */
 package Elementos;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Map;
  */
 public class Elemento
 {
-    public static Map<String, Elemento> mElementos;
+    public static Map<String, Elemento> mElementos = new HashMap<String, Elemento>();
 
     public enum Tipo { terminal, no_terminal, terminal_nula, simbolo_inicial, regla_de_produccion };
     
