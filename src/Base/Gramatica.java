@@ -33,6 +33,7 @@ public class Gramatica
         {
             _producciones.add(new Produccion(producciones[i]));
         }
+        System.out.println("t: " + _producciones.size());
     }
 
     public boolean gramaticaS()
@@ -109,6 +110,8 @@ public class Gramatica
      */
     public ArrayList siguientes(NoTerminal noTerminal)
     {
+        return null;
+        /*
         String siguientes = "";
         Iterator<Produccion> it = _producciones.iterator();
         while(it.hasNext())
@@ -271,13 +274,20 @@ public class Gramatica
 
     public void factIzq()
     {
+        
+    }
+
+    public void sustitucionIzq()
+    {
         // Recorremos todas las producciones
-        int i = 0; // indice, que indica en qué elemento del arreglo estamos.
-        Iterator<Produccion> it = _producciones.iterator();
-        while(it.hasNext())
+        // int i = 0; // indice, que indica en qué elemento del arreglo estamos.
+        // Iterator<Produccion> it = _producciones.iterator();
+        // while(it.hasNext())
+        for(int i = 0; i < _producciones.size(); i++)
         {
             // Ponemos un alias a la producción.
-            Produccion p1 = it.next();
+            // Produccion p1 = it.next();
+            Produccion p1 = _producciones.get(i);
             
             // Buscamos las producciones cuyo primer simbolo del lado
             // derecho es un no terminal
@@ -314,19 +324,15 @@ public class Gramatica
                             nuevaDerecha.add(p1.derecha(k));
                         }
 
-                        Produccion nuevaProduccion = new Produccion(nt, nuevaDerecha);
+                        Produccion nuevaProduccion = new Produccion(p1.izquierda(), nuevaDerecha);
                         nuevasProducciones.add(nuevaProduccion);
                     }
                 }
+                _producciones.remove(i);
                 _producciones.addAll(i, nuevasProducciones);
             }
-            i++;
+            // i++;
         }
-    }
-
-    public void sustitucionIzq()
-    {
-        
     }
 
     /**
@@ -357,7 +363,6 @@ public class Gramatica
         System.out.println("--" + _producciones.size());
         for(int i = 0; i < _producciones.size(); i++)
         {
-            System.out.println("---");
             s += _producciones.get(i) + "\n";
         }
         return s;

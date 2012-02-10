@@ -13,10 +13,14 @@ public class principal
     
     public static void main(String args[])
     {
-        String sGram = "<S>-><S>c\n<S>->c<S><A><B>\n<A>->a<A>\n<A>->$\n<B>->b";
+        String sGram = "<A>->a\n<A>-><B>c\n<B>->a<A>\n<B>->b<B>\n<C>-><D>a\n<D>->a<B>\n<D>->c<C>a";
         Gramatica g = new Gramatica(sGram);
 
-        System.out.println("Gramatica:\n" + g + "S: " +g.gramaticaS());
+        // System.out.println("Gramatica:\n" + g + "S: " +g.gramaticaS());
+
+        g.sustitucionIzq();
+        
+        System.out.println("" + g);
 
         // System.out.println("" + g.siguientes(g._producciones[4]._izquierda) + " - " + g._producciones[0]._izquierda);
     }
